@@ -1,0 +1,11 @@
+{
+  "size": 1,
+  "collection": [
+    {
+      "sender": "test",
+      "is_default": false,
+      "status": "ACTIVE",
+      "created_at": "1970-01-01T00:00:00+01:00"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+language: go
+
+go_import_path: github.com/smsapi/smsapi-go/smsapi
+
+go:
+  - "1.x"
+  - "1.12.x"
+  - master
+
+script:
+  - go test -v ./smsapi
+  - go test -coverprofile=coverage.txt -covermode=atomic -v ./smsapi
+
+before_script:
+  - go get ./...
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

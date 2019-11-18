@@ -1,0 +1,9 @@
+{
+  "name": "test",
+  "email": "test",
+  "username": "test",
+  "phone_number": "100200300",
+  "payment_type": "prepaid",
+  "user_type": "native",
+  "points": 0
+}

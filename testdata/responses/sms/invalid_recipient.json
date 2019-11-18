@@ -1,0 +1,11 @@
+{
+  "error": 13,
+  "message": "No correct phone numbers",
+  "invalid_numbers": [
+    {
+      "number": "48100200300",
+      "submitted_number": "100200300",
+      "message": "Invalid phone number"
+    }
+  ]
+}

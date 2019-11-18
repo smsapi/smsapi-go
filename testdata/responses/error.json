@@ -1,0 +1,19 @@
+{
+  "message": "This value should not be blank.",
+  "error": "invalid_request_data",
+  "developer_description": null,
+  "errors": [
+    {
+      "message": "This value should not be blank.",
+      "error": "This value should not be blank.",
+      "path": "credentials[password]",
+      "value": ""
+    },
+    {
+      "message": "This field was not expected.",
+      "error": "This field was not expected.",
+      "path": "credentials[username]",
+      "value": ""
+    }
+  ]
+}

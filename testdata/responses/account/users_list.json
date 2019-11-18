@@ -1,0 +1,15 @@
+{
+  "size": 1,
+  "collection": [
+    {
+      "id": "1",
+      "username": "test",
+      "active": true,
+      "description": "",
+      "points": {
+        "from_account": 0,
+        "per_month": 0
+      }
+    }
+  ]
+}
