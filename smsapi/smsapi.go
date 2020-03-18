@@ -43,12 +43,13 @@ type Client struct {
 	BaseUrl *url.URL
 	Auth    *BearerAuth
 
-	Sms      *SmsApi
-	Account  *AccountApi
-	Contacts *ContactsApi
-	ShortUrl *ShortUrlApi
-	Hlr      *HlrApi
-	Sender   *SenderApi
+	Sms       *SmsApi
+	Account   *AccountApi
+	Contacts  *ContactsApi
+	ShortUrl  *ShortUrlApi
+	Hlr       *HlrApi
+	Sender    *SenderApi
+	Blacklist *BlacklistApi
 
 	Mms *MmsApi
 	Vms *VmsApi
@@ -76,6 +77,7 @@ func NewClient(apiUrl string, accessToken string, httpClient *http.Client) *Clie
 	c.ShortUrl = &ShortUrlApi{client: c}
 	c.Hlr = &HlrApi{client: c}
 	c.Sender = &SenderApi{client: c}
+	c.Blacklist = &BlacklistApi{client: c}
 
 	return c
 }
