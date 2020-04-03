@@ -3,8 +3,8 @@
   "collection": [
     {
       "id": "1",
-      "phone_number": "654543432",
-      "expire_at": "2060-01-01T20:00:00Z",
+      "phone_number": "654543431",
+      "expire_at": "2060-01-01",
       "created_at": "2020-03-18T13:00:00Z"
     }
   ]

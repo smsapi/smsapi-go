@@ -11,25 +11,40 @@ type BlacklistApi struct {
 	client *Client
 }
 
-type BlacklistPhoneNumbersListFilters struct {
-	Query  string `url:"q,omitempty"`
-	Offset int    `url:"offset,omitempty"`
-	Limit  int    `url:"limit,omitempty"`
+type BlacklistPhoneNumbersCollectionFilters struct {
+	PaginationFilters
+	Query string `url:"q,omitempty"`
 }
 
 type BlackListPhoneNumber struct {
-	Id          string    `json:"id,omitempty"`
-	PhoneNumber string    `json:"phone_number,omitempty"`
-	ExpireAt    *Timestamp `json:"expire_at,omitempty"`
+	Id          string     `json:"id,omitempty"`
+	PhoneNumber string     `json:"phone_number,omitempty"`
+	ExpireAt    *Date      `json:"expire_at,omitempty"`
 	CreatedAt   *Timestamp `json:"created_at,omitempty"`
 }
 
 type BlacklistPhoneNumberCollection struct {
-	Size       int                     `json:"size"`
+	CollectionMeta
 	Collection []*BlackListPhoneNumber `json:"collection"`
 }
 
-func (blacklistApi *BlacklistApi) GetAllPhoneNumbers(ctx context.Context, filters *BlacklistPhoneNumbersListFilters) (*BlacklistPhoneNumberCollection, error) {
+type BlacklistPhoneNumbersCollectionIterator struct {
+	i *PageIterator
+}
+
+func (b *BlacklistPhoneNumbersCollectionIterator) Next() (*BlacklistPhoneNumberCollection, error) {
+	bp := new(BlacklistPhoneNumberCollection)
+
+	err := b.i.Next(bp)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return bp, nil
+}
+
+func (blacklistApi *BlacklistApi) GetPhoneNumbers(ctx context.Context, filters *BlacklistPhoneNumbersCollectionFilters) (*BlacklistPhoneNumberCollection, error) {
 	var result = new(BlacklistPhoneNumberCollection)
 
 	uri, _ := addQueryParams(blacklistApiPath, filters)
@@ -39,7 +54,14 @@ func (blacklistApi *BlacklistApi) GetAllPhoneNumbers(ctx context.Context, filter
 	return result, err
 }
 
-func (blacklistApi *BlacklistApi) AddPhoneNumber(ctx context.Context, phoneNumber string, expireAt *Timestamp) (*BlackListPhoneNumber, error) {
+func (blacklistApi *BlacklistApi) GetPageIterator(ctx context.Context, filters *BlacklistPhoneNumbersCollectionFilters) *BlacklistPhoneNumbersCollectionIterator {
+	ci := NewPageIterator(blacklistApi.client, ctx, blacklistApiPath, filters)
+	bi := &BlacklistPhoneNumbersCollectionIterator{ci}
+
+	return bi
+}
+
+func (blacklistApi *BlacklistApi) AddPhoneNumber(ctx context.Context, phoneNumber string, expireAt *Date) (*BlackListPhoneNumber, error) {
 	var result = new(BlackListPhoneNumber)
 
 	blackListPhoneNumber := BlackListPhoneNumber{

@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"context"
 	"github.com/smsapi/smsapi-go/smsapi"
 	"log"
 	"testing"
@@ -23,11 +24,11 @@ func TestAddPhoneNumberToBlacklist(t *testing.T) {
 	blacklistPhoneNumberId = result.Id
 }
 
-func TestGetAllPhoneNumbers(t *testing.T)  {
+func TestGetAllPhoneNumbers(t *testing.T) {
 	ctx, cancel := createCtx()
 	defer cancel()
 
-	result, err := client.Blacklist.GetAllPhoneNumbers(ctx, &smsapi.BlacklistPhoneNumbersListFilters{})
+	result, err := client.Blacklist.GetPhoneNumbers(ctx, &smsapi.BlacklistPhoneNumbersCollectionFilters{})
 
 	if err != nil {
 		log.Fatal(err)
@@ -38,7 +39,7 @@ func TestGetAllPhoneNumbers(t *testing.T)  {
 	}
 }
 
-func TestDeletePhoneNumber(t *testing.T)  {
+func TestDeletePhoneNumber(t *testing.T) {
 	ctx, cancel := createCtx()
 	defer cancel()
 
@@ -48,7 +49,7 @@ func TestDeletePhoneNumber(t *testing.T)  {
 		log.Fatal(err)
 	}
 
-	result, err := client.Blacklist.GetAllPhoneNumbers(ctx, &smsapi.BlacklistPhoneNumbersListFilters{})
+	result, err := client.Blacklist.GetPhoneNumbers(ctx, &smsapi.BlacklistPhoneNumbersCollectionFilters{})
 
 	if err != nil {
 		log.Fatal(err)
@@ -59,7 +60,7 @@ func TestDeletePhoneNumber(t *testing.T)  {
 	}
 }
 
-func TestDeleteAllPhoneNumbers(t *testing.T)  {
+func TestDeleteAllPhoneNumbers(t *testing.T) {
 	ctx, cancel := createCtx()
 	defer cancel()
 
@@ -75,7 +76,7 @@ func TestDeleteAllPhoneNumbers(t *testing.T)  {
 		log.Fatal(err)
 	}
 
-	result, err := client.Blacklist.GetAllPhoneNumbers(ctx, &smsapi.BlacklistPhoneNumbersListFilters{})
+	result, err := client.Blacklist.GetPhoneNumbers(ctx, &smsapi.BlacklistPhoneNumbersCollectionFilters{})
 
 	if err != nil {
 		log.Fatal(err)
@@ -84,4 +85,14 @@ func TestDeleteAllPhoneNumbers(t *testing.T)  {
 	if result.Size != 0 {
 		log.Fatal("Collection should be empty")
 	}
+}
+
+func addPhoneNumber(ctx context.Context, phoneNumber string, expirationDate *smsapi.Date) *smsapi.BlackListPhoneNumber {
+	res, err := client.Blacklist.AddPhoneNumber(ctx, phoneNumber, expirationDate)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return res
 }

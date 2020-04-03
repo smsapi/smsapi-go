@@ -69,6 +69,41 @@ func TestUnmarshalInvalid(t *testing.T) {
 	}
 }
 
+func TestUnmarshalDate(t *testing.T) {
+	var result Date
+	dateStr := `"2019-01-01"`
+	expected := NewDate(2019, 1, 1)
+
+	err := json.Unmarshal([]byte(dateStr), &result)
+
+	if err != nil {
+		t.Errorf("Can not Unmarshal: %s", dateStr)
+	}
+
+	tEquals := expected.Equal(result)
+
+	if tEquals != true {
+		t.Errorf("Unmarshal error Given: %v expected: %v", result, expected)
+	}
+}
+
+func TestMarshalDate(t *testing.T) {
+	date := NewDate(2019, 1, 1)
+
+	result, err := date.MarshalJSON()
+
+	if err != nil {
+		t.Errorf("Can not Marshal: %s", date)
+	}
+
+	marshalResult := string(result)
+	expected := `"2019-01-01"`
+
+	if marshalResult != expected {
+		t.Errorf("Marshal error Given: %s expected: %s", marshalResult, expected)
+	}
+}
+
 func assertUnmarshalDateTime(t *testing.T, expected Timestamp, given string, equal bool) {
 	var result Timestamp
 

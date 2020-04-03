@@ -20,17 +20,32 @@ func TestGetContacts(t *testing.T) {
 
 	result, _ := client.Contacts.GetContacts(ctx, nil)
 
-	contact := CreateContact()
-
-	expected := &ContactCollectionResponse{
-		Size: 1,
-		Collection: []*Contact{
-			contact,
-		},
-	}
+	expected := createExpectedContactsCollection()
 
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("Given: %+v Expected: %+v", result, expected)
+	}
+}
+
+func TestContactsPageIterator(t *testing.T) {
+	client, mux, teardown := setup()
+
+	defer teardown()
+
+	mux.HandleFunc("/contacts", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, readFixture("contacts/list_contacts.json"))
+
+		assertRequestMethod(t, r, "GET")
+	})
+
+	iterator := client.Contacts.GetContactsPageIterator(ctx, nil)
+
+	page, _ := iterator.Next()
+
+	expectedPage := createExpectedContactsCollection()
+
+	if !reflect.DeepEqual(page, expectedPage) {
+		t.Errorf("Given: %+v Expected: %+v", page, expectedPage)
 	}
 }
 
@@ -47,7 +62,7 @@ func TestGetContact(t *testing.T) {
 
 	result, _ := client.Contacts.GetContact(ctx, "1")
 
-	expected := CreateContact()
+	expected := createContact()
 
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("Given: %+v Expected: %+v", result, expected)
@@ -73,7 +88,7 @@ func TestCreateContact(t *testing.T) {
 
 	result, _ := client.Contacts.CreateContact(ctx, contact)
 
-	expectedResponse := CreateContact()
+	expectedResponse := createContact()
 
 	if !reflect.DeepEqual(result, expectedResponse) {
 		t.Errorf("Given: %+v Expected: %+v", result, contact)
@@ -99,7 +114,7 @@ func TestUpdateContact(t *testing.T) {
 
 	result, _ := client.Contacts.UpdateContact(ctx, "1", contact)
 
-	expectedResponse := CreateContact()
+	expectedResponse := createContact()
 
 	if !reflect.DeepEqual(expectedResponse, result) {
 		t.Errorf("Given: %+v Expected: %+v", result, expectedResponse)
@@ -154,7 +169,7 @@ func TestGetContactGroups(t *testing.T) {
 	expected := &ContactGroupsCollectionResponse{
 		Size: 1,
 		Collection: []*ContactGroup{
-			CreateGroup(),
+			createGroup(),
 		},
 	}
 
@@ -176,7 +191,7 @@ func TestGetContactGroup(t *testing.T) {
 
 	result, _ := client.Contacts.GetContactGroup(ctx, "1", "1")
 
-	expected := CreateGroup()
+	expected := createGroup()
 
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("Given: %+v Expected: %+v", result, expected)
@@ -199,7 +214,7 @@ func TestBindContactToGroup(t *testing.T) {
 	expected := &ContactGroupsCollectionResponse{
 		Size: 1,
 		Collection: []*ContactGroup{
-			CreateGroup(),
+			createGroup(),
 		},
 	}
 
@@ -240,7 +255,7 @@ func TestGetAllGroups(t *testing.T) {
 	expected := &ContactGroupsCollectionResponse{
 		Size: 1,
 		Collection: []*ContactGroup{
-			CreateGroup(),
+			createGroup(),
 		},
 	}
 
@@ -270,7 +285,7 @@ func TestCreateGroup(t *testing.T) {
 
 	result, _ := client.Contacts.CreateGroup(ctx, group)
 
-	expectedResponse := CreateGroup()
+	expectedResponse := createGroup()
 
 	if !reflect.DeepEqual(expectedResponse, result) {
 		t.Errorf("Given: %+v Expected: %+v", result, expectedResponse)
@@ -287,7 +302,7 @@ func TestUpdateGroup(t *testing.T) {
 		assertRequestMethod(t, r, "PUT")
 	})
 
-	group := CreateGroup()
+	group := createGroup()
 
 	result, _ := client.Contacts.UpdateGroup(ctx, "1", group)
 
@@ -388,14 +403,28 @@ func TestAddContactToGroup(t *testing.T) {
 
 	result, _ := client.Contacts.AddContactToGroup(ctx, "1", "1")
 
-	expected := CreateContact()
+	expected := createContact()
 
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("Given: %+v Expected: %+v", result, expected)
 	}
 }
 
-func CreateContact() *Contact {
+func createExpectedContactsCollection() *ContactCollectionResponse {
+	contact := createContact()
+
+	expected := &ContactCollectionResponse{
+		CollectionMeta: CollectionMeta{
+			Size: 1,
+		},
+		Collection: []*Contact{
+			contact,
+		},
+	}
+	return expected
+}
+
+func createContact() *Contact {
 	return &Contact{
 		Id:           "1",
 		FirstName:    "Jon",
@@ -412,7 +441,7 @@ func CreateContact() *Contact {
 	}
 }
 
-func CreateGroup() *ContactGroup {
+func createGroup() *ContactGroup {
 	return &ContactGroup{
 		Id:            "1",
 		Name:          "group",
@@ -423,12 +452,12 @@ func CreateGroup() *ContactGroup {
 		CreatedBy:     "j.doe",
 		Idx:           "",
 		Permissions: []*ContactGroupPermissions{
-			CreateGroupPermissions(),
+			createGroupPermissions(),
 		},
 	}
 }
 
-func CreateGroupPermissions() *ContactGroupPermissions {
+func createGroupPermissions() *ContactGroupPermissions {
 	return &ContactGroupPermissions{
 		Username: "j.doe",
 		GroupId:  "1",

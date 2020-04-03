@@ -6,14 +6,16 @@ import (
 	"net/http"
 )
 
+const contactsApiPath = "/contacts"
+
 type ContactsApi struct {
 	client *Client
 }
 
 type ContactListFilters struct {
+	PaginationFilters
+
 	Query        string   `url:"q,omitempty"`
-	Offset       int      `url:"offset,omitempty"`
-	Limit        int      `url:"limit,omitempty"`
 	OrderBy      string   `url:"order_by,omitempty"`
 	PhoneNumber  []string `url:"phone_number,omitempty"`
 	Email        []string `url:"email,omitempty"`
@@ -40,8 +42,24 @@ type Contact struct {
 }
 
 type ContactCollectionResponse struct {
-	Size       int        `json:"size"`
+	CollectionMeta
 	Collection []*Contact `json:"collection"`
+}
+
+type ContactsCollectionIterator struct {
+	i *PageIterator
+}
+
+func (b *ContactsCollectionIterator) Next() (*ContactCollectionResponse, error) {
+	c := new(ContactCollectionResponse)
+
+	err := b.i.Next(c)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return c, nil
 }
 
 func (contactsApi *ContactsApi) GetContacts(ctx context.Context, filters *ContactListFilters) (*ContactCollectionResponse, error) {
@@ -54,20 +72,27 @@ func (contactsApi *ContactsApi) GetContacts(ctx context.Context, filters *Contac
 	return result, err
 }
 
+func (contactsApi *ContactsApi) GetContactsPageIterator(ctx context.Context, filters *ContactListFilters) *ContactsCollectionIterator {
+	i := NewPageIterator(contactsApi.client, ctx, contactsApiPath, filters)
+	ci := &ContactsCollectionIterator{i}
+
+	return ci
+}
+
 func (contactsApi *ContactsApi) CreateContact(ctx context.Context, contact *Contact) (*Contact, error) {
 	var result = new(Contact)
 
-	err := contactsApi.client.Urlencoded(ctx, http.MethodPost, "/contacts", result, contact)
+	err := contactsApi.client.Urlencoded(ctx, http.MethodPost, contactsApiPath, result, contact)
 
 	return result, err
 }
 
 func (contactsApi *ContactsApi) DeleteAllContacts(ctx context.Context) error {
-	return contactsApi.client.Delete(ctx, "/contacts")
+	return contactsApi.client.Delete(ctx, contactsApiPath)
 }
 
 func (contactsApi *ContactsApi) GetContact(ctx context.Context, id string) (*Contact, error) {
-	uri := fmt.Sprintf("/contacts/%s", id)
+	uri := fmt.Sprintf("%s/%s", contactsApiPath, id)
 
 	var result = new(Contact)
 

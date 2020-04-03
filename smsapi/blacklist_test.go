@@ -60,7 +60,7 @@ func TestDeletePhoneNumber(t *testing.T) {
 	}
 }
 
-func TestGetAllPhoneNumbers(t *testing.T) {
+func TestGetPhoneNumbers(t *testing.T) {
 	client, mux, teardown := setup()
 
 	defer teardown()
@@ -71,10 +71,12 @@ func TestGetAllPhoneNumbers(t *testing.T) {
 		assertRequestMethod(t, r, "GET")
 	})
 
-	result, _ := client.Blacklist.GetAllPhoneNumbers(ctx, &BlacklistPhoneNumbersListFilters{})
+	result, _ := client.Blacklist.GetPhoneNumbers(ctx, &BlacklistPhoneNumbersCollectionFilters{})
 
 	expected := &BlacklistPhoneNumberCollection{
-		Size:       1,
+		CollectionMeta: CollectionMeta{
+			Size: 1,
+		},
 		Collection: []*BlackListPhoneNumber{
 			createPhoneNumberResponse(),
 		},
@@ -85,11 +87,49 @@ func TestGetAllPhoneNumbers(t *testing.T) {
 	}
 }
 
+func TestBlackListPageIterator(t *testing.T) {
+	client, mux, teardown := setup()
+
+	defer teardown()
+
+	mux.HandleFunc("/blacklist/phone_numbers", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, readFixture("blacklist/collection.json"))
+
+		assertRequestMethod(t, r, "GET")
+	})
+
+	iterator := client.Blacklist.GetPageIterator(ctx, nil)
+
+	page, _ := iterator.Next()
+
+	expectedPage := createExpectedBlacklistCollection()
+
+	if !reflect.DeepEqual(page, expectedPage) {
+		t.Errorf("Given: %+v Expected: %+v", page, expectedPage)
+	}
+}
+
+func createExpectedBlacklistCollection() *BlacklistPhoneNumberCollection {
+	return &BlacklistPhoneNumberCollection{
+		CollectionMeta: CollectionMeta{
+			Size: 1,
+		},
+		Collection: []*BlackListPhoneNumber{
+			&BlackListPhoneNumber{
+				Id:          "1",
+				PhoneNumber: "654543431",
+				ExpireAt:    &Date{2060, time.January, 1},
+				CreatedAt:   &Timestamp{time.Date(2020, time.March, 18, 13, 0, 0, 0, time.UTC)},
+			},
+		},
+	}
+}
+
 func createPhoneNumberResponse() *BlackListPhoneNumber {
 	return &BlackListPhoneNumber{
 		Id:          "1",
-		PhoneNumber: "654543432",
-		ExpireAt:    &Timestamp{time.Date(2060, time.January, 01, 20, 0, 0, 0, time.UTC)},
+		PhoneNumber: "654543431",
+		ExpireAt:    &Date{2060, time.January, 1},
 		CreatedAt:   &Timestamp{time.Date(2020, time.March, 18, 13, 0, 0, 0, time.UTC)},
 	}
 }
