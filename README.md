@@ -21,6 +21,29 @@ Create new Smsapi client for smsapi.pl customers:
 client = smsapi.NewPlClient(accessToken, nil)	
 ```
 
+Send Sms
+```go
+result, err := client.Sms.Send(context.Background(), "+48500500500", "go", "")
+```
+
+Iterate over results
+```go
+
+pageIterator := client.Contacts.GetContactsPageIterator(ctx, nil)
+
+for {
+    page, err := pageIterator.Next()
+
+    if err != nil {
+        break
+    }
+
+    for _, c := range page.Collection {
+        fmt.Println(c.PhoneNumber)
+    }
+}
+```
+
 ## Integration Tests ##
 
 Additional integration tests can be executed by following command:
