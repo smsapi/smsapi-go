@@ -1,4 +1,4 @@
-// +build unit
+// +build unit short_url
 
 package smsapi
 

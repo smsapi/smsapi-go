@@ -9,3 +9,7 @@ tests:
 
 tests-e2e:
 	go test -v --tags=e2e ./smsapi
+
+
+tests-short-url:
+	go test -v --tags=short_url ./smsapi
