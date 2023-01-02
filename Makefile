@@ -4,8 +4,8 @@ lint:
 
 
 tests:
-	go test -v ./smsapi
+	go test -v --tags=unit ./smsapi
 
 
 tests-e2e:
-	go test -v --tags=e2e ./test/e2e
+	go test -v --tags=e2e ./smsapi

@@ -1,8 +1,9 @@
-package e2e
+// +build e2e
+
+package smsapi
 
 import (
 	"context"
-	"github.com/smsapi/smsapi-go/smsapi"
 	"os"
 	"time"
 )
@@ -10,13 +11,13 @@ import (
 var (
 	phoneNumber string
 
-	client *smsapi.Client
+	client *Client
 )
 
 func init() {
 	phoneNumber = os.Getenv("PHONE_NUMBER")
 
-	client = smsapi.NewPlClient(os.Getenv("SMSAPI_ACCESS_TOKEN"), nil)
+	client = NewPlClient(os.Getenv("SMSAPI_ACCESS_TOKEN"), nil)
 }
 
 func createCtx() (context.Context, context.CancelFunc) {

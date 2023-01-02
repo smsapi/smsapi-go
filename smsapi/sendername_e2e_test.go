@@ -1,4 +1,6 @@
-package e2e
+// +build e2e
+
+package smsapi
 
 import (
 	"log"

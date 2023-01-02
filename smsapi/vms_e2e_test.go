@@ -1,7 +1,8 @@
-package e2e
+// +build e2e
+
+package smsapi
 
 import (
-	"github.com/smsapi/smsapi-go/smsapi"
 	"log"
 	"testing"
 	"time"
@@ -21,7 +22,7 @@ func TestSendVms(t *testing.T) {
 }
 
 func TestScheduleVms(t *testing.T) {
-	future := &smsapi.Timestamp{time.Now().Local().AddDate(0, 0, 2)}
+	future := &Timestamp{time.Now().Local().AddDate(0, 0, 2)}
 
 	ctx, cancel := createCtx()
 	defer cancel()

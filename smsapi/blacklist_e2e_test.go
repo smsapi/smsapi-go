@@ -1,8 +1,9 @@
-package e2e
+// +build e2e
+
+package smsapi
 
 import (
 	"context"
-	"github.com/smsapi/smsapi-go/smsapi"
 	"log"
 	"testing"
 )
@@ -28,7 +29,7 @@ func TestGetAllPhoneNumbers(t *testing.T) {
 	ctx, cancel := createCtx()
 	defer cancel()
 
-	result, err := client.Blacklist.GetPhoneNumbers(ctx, &smsapi.BlacklistPhoneNumbersCollectionFilters{})
+	result, err := client.Blacklist.GetPhoneNumbers(ctx, &BlacklistPhoneNumbersCollectionFilters{})
 
 	if err != nil {
 		log.Fatal(err)
@@ -49,7 +50,7 @@ func TestDeletePhoneNumber(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	result, err := client.Blacklist.GetPhoneNumbers(ctx, &smsapi.BlacklistPhoneNumbersCollectionFilters{})
+	result, err := client.Blacklist.GetPhoneNumbers(ctx, &BlacklistPhoneNumbersCollectionFilters{})
 
 	if err != nil {
 		log.Fatal(err)
@@ -76,7 +77,7 @@ func TestDeleteAllPhoneNumbers(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	result, err := client.Blacklist.GetPhoneNumbers(ctx, &smsapi.BlacklistPhoneNumbersCollectionFilters{})
+	result, err := client.Blacklist.GetPhoneNumbers(ctx, &BlacklistPhoneNumbersCollectionFilters{})
 
 	if err != nil {
 		log.Fatal(err)
@@ -87,7 +88,7 @@ func TestDeleteAllPhoneNumbers(t *testing.T) {
 	}
 }
 
-func addPhoneNumber(ctx context.Context, phoneNumber string, expirationDate *smsapi.Date) *smsapi.BlackListPhoneNumber {
+func addPhoneNumber(ctx context.Context, phoneNumber string, expirationDate *Date) *BlackListPhoneNumber {
 	res, err := client.Blacklist.AddPhoneNumber(ctx, phoneNumber, expirationDate)
 
 	if err != nil {

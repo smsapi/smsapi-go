@@ -1,7 +1,8 @@
-package e2e
+// +build e2e
+
+package smsapi
 
 import (
-	"github.com/smsapi/smsapi-go/smsapi"
 	"log"
 	"testing"
 )
@@ -13,7 +14,7 @@ var (
 )
 
 func TestCreateGroup(t *testing.T) {
-	group := &smsapi.ContactGroup{
+	group := &ContactGroup{
 		Name:        "demo",
 		Description: "go-smsapi e2e",
 	}
@@ -42,7 +43,7 @@ func TestRemoveGroup(t *testing.T) {
 }
 
 func TestCreateContact(t *testing.T) {
-	contact := &smsapi.Contact{
+	contact := &Contact{
 		FirstName:   "demo",
 		PhoneNumber: phoneNumber,
 		Description: "go-smsapi e2e",

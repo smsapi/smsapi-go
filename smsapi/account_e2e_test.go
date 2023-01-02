@@ -1,7 +1,8 @@
-package e2e
+// +build e2e
+
+package smsapi
 
 import (
-	"github.com/smsapi/smsapi-go/smsapi"
 	"log"
 	"testing"
 )
@@ -22,15 +23,15 @@ func TestGetUserDetails(t *testing.T) {
 }
 
 func TestCreateUser(t *testing.T) {
-	data := &smsapi.User{
-		Credentials: &smsapi.UserCredentials{
+	data := &User{
+		Credentials: &UserCredentials{
 			Username:    "go-smsapi",
 			Password:    "Go-smsapi-1",
 			ApiPassword: "Go-smsapi-1",
 		},
 		Active:      true,
 		Description: "go-smsapi",
-		Points: &smsapi.UserPoints{
+		Points: &UserPoints{
 			FromAccount: 10,
 			PerMonth:    10,
 		},
@@ -71,11 +72,11 @@ func TestGetUsersList(t *testing.T) {
 }
 
 func TestUpdateUser(t *testing.T) {
-	data := &smsapi.User{
-		Credentials: &smsapi.UserCredentials{
+	data := &User{
+		Credentials: &UserCredentials{
 			Password: "Go-smsapi-2",
 		},
-		Points: &smsapi.UserPoints{
+		Points: &UserPoints{
 			FromAccount: 5,
 			PerMonth:    5,
 		},
