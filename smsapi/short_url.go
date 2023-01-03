@@ -57,6 +57,7 @@ func (shortUrlApi *ShortUrlApi) CreateReport(ctx context.Context, filters *Click
 }
 
 type LinkType string
+type ExpireTimeUnit string
 
 const (
 	linkTypeUrl = LinkType("URL")
@@ -65,7 +66,8 @@ const (
 type Link struct {
 	Url         string     `json:"url" url:"url,omitempty"`
 	Name        string     `json:"name" url:"name,omitempty"`
-	Expire      *Timestamp `json:"expire" url:"expire,omitempty"`
+	ExpireTime  *int        `json:"expire_time,omitempty" url:"expire_time,omitempty"`
+	ExpireUnit  *ExpireTimeUnit `json:"expire_unit,omitempty" url:"expire_unit,omitempty"`
 	Description string     `json:"description" url:"description,omitempty"`
 	Type        LinkType   `json:"type" url:"type,omitempty"`
 }
