@@ -79,8 +79,8 @@ func TestCreateShortUrlWithExpire(t *testing.T) {
 		Description: "go-smsapi-expire",
 		Url:         "https://smsapi.pl",
 		Type:        smsapi.LinkType("URL"),
-		ExpireTime:  &expireTime,
-		ExpireUnit:  &expireUnit,
+		ExpireTime:  expireTime,
+		ExpireUnit:  expireUnit,
 	}
 
 	result, err := client.ShortUrl.CreateLinkRaw(ctx, link)
