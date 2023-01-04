@@ -72,7 +72,7 @@ func TestCreateShortUrlWithExpire(t *testing.T) {
 	defer cancel()
 
     expireTime := 10
-    expireUnit := smsapi.ExpireTimeUnit("days")
+    expireUnit := smsapi.ExpireTimeDays
 
     link := &smsapi.Link{
 		Name:        "go-smsapi-expire",

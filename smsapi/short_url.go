@@ -61,6 +61,10 @@ type ExpireTimeUnit string
 
 const (
 	linkTypeUrl = LinkType("URL")
+	ExpireTimeSeconds = ExpireTimeUnit("seconds")
+	ExpireTimeMinutes = ExpireTimeUnit("minutes")
+	ExpireTimeHours = ExpireTimeUnit("hours")
+	ExpireTimeDays = ExpireTimeUnit("days")
 )
 
 type Link struct {
