@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"github.com/smsapi/smsapi-go/smsapi"
 	"log"
 	"testing"
 )
@@ -64,4 +65,29 @@ func TestDeleteShortUrl(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func TestCreateShortUrlWithExpire(t *testing.T) {
+	ctx, cancel := createCtx()
+	defer cancel()
+
+    expireTime := 10
+    expireUnit := smsapi.ExpireTimeDays
+
+    link := &smsapi.Link{
+		Name:        "go-smsapi-expire",
+		Description: "go-smsapi-expire",
+		Url:         "https://smsapi.pl",
+		Type:        smsapi.LinkType("URL"),
+		ExpireTime:  expireTime,
+		ExpireUnit:  expireUnit,
+	}
+
+	result, err := client.ShortUrl.CreateLinkRaw(ctx, link)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	client.ShortUrl.DeleteLink(ctx, result.Id)
 }
