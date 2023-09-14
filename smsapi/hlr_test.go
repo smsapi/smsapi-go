@@ -15,9 +15,9 @@ func TestCheckNumberByHlr(t *testing.T) {
 	mux.HandleFunc("/hlr.do", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, readFixture("hlr/check_number.json"))
 
-		assertRequestMethod(t, r, "GET")
+		assertRequestMethod(t, r, "POST")
 		assertRequestQueryParam(t, r, "format", "json")
-		assertRequestQueryParam(t, r, "number", "100200300")
+		assertRequestJsonContains(t, r, "number", "100200300")
 	})
 
 	result, _ := client.Hlr.CheckNumber(ctx, "100200300")

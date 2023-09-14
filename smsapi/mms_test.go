@@ -115,12 +115,14 @@ func TestRemoveScheduledMms(t *testing.T) {
 
 	defer teardown()
 
+	mmsId := "1"
+
 	mux.HandleFunc("/mms.do", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, readFixture("mms/remove_scheduled.json"))
 
-		assertRequestMethod(t, r, "GET")
+		assertRequestMethod(t, r, "POST")
 		assertRequestQueryParam(t, r, "format", "json")
-		assertRequestQueryParam(t, r, "sch_del", "1")
+		assertRequestJsonContains(t, r, "sch_del", mmsId)
 	})
 
 	result, _ := client.Mms.RemoveScheduled(ctx, "1")
@@ -131,7 +133,7 @@ func TestRemoveScheduledMms(t *testing.T) {
 			Id string `json:"id,omitempty"`
 		}{
 			{
-				Id: "1",
+				Id: mmsId,
 			},
 		},
 	}

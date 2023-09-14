@@ -1,5 +1,8 @@
 # Changes
 
+## 1.1.1
+- Update http method for some endpoints
+
 ## Unreleased
 - Fixed Short URL with expire time
 

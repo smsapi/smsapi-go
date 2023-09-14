@@ -98,15 +98,17 @@ func TestRemoveScheduledSms(t *testing.T) {
 
 	defer teardown()
 
+	smsId := "1"
+
 	mux.HandleFunc("/sms.do", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, readFixture("sms/remove.json"))
 
-		assertRequestMethod(t, r, "GET")
+		assertRequestMethod(t, r, "POST")
 		assertRequestQueryParam(t, r, "format", "json")
-		assertRequestQueryParam(t, r, "sch_del", "1")
+		assertRequestJsonContains(t, r, "sch_del", smsId)
 	})
 
-	result, _ := client.Sms.RemoveScheduled(ctx, "1")
+	result, _ := client.Sms.RemoveScheduled(ctx, smsId)
 
 	expected := &SmsRemoveResult{
 		Count: 1,
@@ -114,7 +116,7 @@ func TestRemoveScheduledSms(t *testing.T) {
 			Id string `json:"id,omitempty"`
 		}{
 			{
-				Id: "1",
+				Id: smsId,
 			},
 		},
 	}

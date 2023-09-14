@@ -66,15 +66,17 @@ func TestRemoveScheduledVms(t *testing.T) {
 
 	defer teardown()
 
+	vmsId := "1"
+
 	mux.HandleFunc("/vms.do", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, readFixture("vms/remove.json"))
 
-		assertRequestMethod(t, r, "GET")
+		assertRequestMethod(t, r, "POST")
 		assertRequestQueryParam(t, r, "format", "json")
-		assertRequestQueryParam(t, r, "sch_del", "1")
+		assertRequestJsonContains(t, r, "sch_del", vmsId)
 	})
 
-	result, _ := client.Vms.RemoveScheduled(ctx, "1")
+	result, _ := client.Vms.RemoveScheduled(ctx, vmsId)
 
 	expected := &VmsRemoveResponse{
 		Count: 1,
@@ -82,7 +84,7 @@ func TestRemoveScheduledVms(t *testing.T) {
 			Id string `json:"id,omitempty"`
 		}{
 			{
-				Id: "1",
+				Id: vmsId,
 			},
 		},
 	}

@@ -93,13 +93,11 @@ type VmsRemoveResponse struct {
 func (vmsApi *VmsApi) RemoveScheduled(ctx context.Context, id string) (*VmsRemoveResponse, error) {
 	var result = new(VmsRemoveResponse)
 
-	v := struct {
-		SchDel string `url:"sch_del"`
+	payload := struct {
+		SchDel string `json:"sch_del"`
 	}{SchDel: id}
 
-	uri, _ := addQueryParams(vmsApiPath, v)
-
-	err := vmsApi.client.LegacyGet(ctx, uri, result)
+	err := vmsApi.client.LegacyPost(ctx, vmsApiPath, result, payload)
 
 	return result, err
 }
