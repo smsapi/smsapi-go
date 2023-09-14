@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/bitly/go-simplejson"
 	"github.com/google/go-querystring/query"
 	"io/ioutil"
 	"log"
@@ -108,6 +109,16 @@ func assertRequestQueryParam(t *testing.T, r *http.Request, key, value string) {
 func assertRequestMethod(t *testing.T, r *http.Request, method string) {
 	if r.Method != method {
 		t.Errorf("Request method error: Expected: %s Given: %s", method, r.Method)
+	}
+}
+
+func assertRequestJsonContains(t *testing.T, r *http.Request, expectedKey, expectedValue string) {
+	payload, _ := simplejson.NewFromReader(r.Body)
+
+	given := payload.Get(expectedKey).MustString()
+
+	if given != expectedValue {
+		t.Errorf("Invalid JSON: expected: %s=%s given: %s", expectedKey, expectedValue, given)
 	}
 }
 

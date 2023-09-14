@@ -95,13 +95,11 @@ type MmsRemoveResponse struct {
 func (mmsApi *MmsApi) RemoveScheduled(ctx context.Context, id string) (*MmsRemoveResponse, error) {
 	var result = new(MmsRemoveResponse)
 
-	v := struct {
-		SchDel string `url:"sch_del"`
+	payload := struct {
+		SchDel string `json:"sch_del"`
 	}{SchDel: id}
 
-	uri, _ := addQueryParams("/mms.do", v)
-
-	err := mmsApi.client.LegacyGet(ctx, uri, result)
+	err := mmsApi.client.LegacyPost(ctx, "/mms.do", result, payload)
 
 	return result, err
 }

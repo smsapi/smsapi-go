@@ -120,13 +120,11 @@ type SmsRemoveResult struct {
 func (smsApi *SmsApi) RemoveScheduled(ctx context.Context, id string) (*SmsRemoveResult, error) {
 	var result = new(SmsRemoveResult)
 
-	v := struct {
-		SchDel string `url:"sch_del"`
+	payload := struct {
+		SchDel string `json:"sch_del"`
 	}{SchDel: id}
 
-	uri, _ := addQueryParams("/sms.do", v)
-
-	err := smsApi.client.LegacyGet(ctx, uri, result)
+	err := smsApi.client.LegacyPost(ctx, "/sms.do", result, payload)
 
 	return result, err
 }

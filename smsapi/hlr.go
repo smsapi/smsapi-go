@@ -13,16 +13,18 @@ type HlrApi struct {
 	client *Client
 }
 
+type Hlr struct {
+	PhoneNumber string `json:"number"`
+}
+
 func (hlrApi *HlrApi) CheckNumber(ctx context.Context, phonenumber string) (*HlrResponse, error) {
 	var result = new(HlrResponse)
 
-	v := struct {
-		Number string `url:"number"`
-	}{Number: phonenumber}
+	payload := Hlr{
+		PhoneNumber: phonenumber,
+	}
 
-	uri, _ := addQueryParams("/hlr.do", v)
-
-	err := hlrApi.client.LegacyGet(ctx, uri, result)
+	err := hlrApi.client.LegacyPost(ctx, "/hlr.do", result, payload)
 
 	return result, err
 }
