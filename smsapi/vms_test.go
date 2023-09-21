@@ -125,7 +125,7 @@ func TestGetVms(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/vms.do", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, readFixture("vms/vms.json"))
+		fmt.Fprint(w, readFixture("vms/collection.json"))
 
 		assertRequestMethod(t, r, "GET")
 		assertRequestQueryParam(t, r, "format", "json")
@@ -134,7 +134,7 @@ func TestGetVms(t *testing.T) {
 
 	result, _ := client.Vms.Get(ctx, "1")
 
-	expected := createVmsResponse()
+	expected := createExpectedVmsCollectionResponse()
 
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("Given: %+v Expected: %+v", result, expected)

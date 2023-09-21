@@ -1,6 +1,8 @@
 package smsapi
 
-import "context"
+import (
+	"context"
+)
 
 type Sms struct {
 	To      string `json:"to,omitempty"`
@@ -129,8 +131,8 @@ func (smsApi *SmsApi) RemoveScheduled(ctx context.Context, id string) (*SmsRemov
 	return result, err
 }
 
-func (smsApi *SmsApi) Get(ctx context.Context, id string) (*SmsResponse, error) {
-	var result = new(SmsResponse)
+func (smsApi *SmsApi) Get(ctx context.Context, id string) (*SmsResultCollection, error) {
+	var result = new(SmsResultCollection)
 
 	v := struct {
 		Status string `url:"status"`

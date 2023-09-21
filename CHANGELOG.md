@@ -1,5 +1,8 @@
 # Changes
 
+## 1.1.2
+- Fix sms,mms,vms GET endpoints
+
 ## 1.1.1
 - Update http method for some endpoints
 

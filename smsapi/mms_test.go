@@ -67,7 +67,7 @@ func TestGetMms(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/mms.do", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, readFixture("mms/mms.json"))
+		fmt.Fprint(w, readFixture("mms/collection.json"))
 
 		assertRequestMethod(t, r, "GET")
 		assertRequestQueryParam(t, r, "format", "json")
@@ -76,7 +76,7 @@ func TestGetMms(t *testing.T) {
 
 	result, _ := client.Mms.Get(ctx, "1")
 
-	expected := createMmsResponse()
+	expected := createMmsCollectionResponse()
 
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("Given: %+v Expected: %+v", result, expected)

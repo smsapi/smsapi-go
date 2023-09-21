@@ -104,8 +104,8 @@ func (mmsApi *MmsApi) RemoveScheduled(ctx context.Context, id string) (*MmsRemov
 	return result, err
 }
 
-func (mmsApi *MmsApi) Get(ctx context.Context, id string) (*MmsResponse, error) {
-	var result = new(MmsResponse)
+func (mmsApi *MmsApi) Get(ctx context.Context, id string) (*MmsCollectionResponse, error) {
+	var result = new(MmsCollectionResponse)
 
 	v := struct {
 		Status string `url:"status"`

@@ -102,8 +102,8 @@ func (vmsApi *VmsApi) RemoveScheduled(ctx context.Context, id string) (*VmsRemov
 	return result, err
 }
 
-func (vmsApi *VmsApi) Get(ctx context.Context, id string) (*VmsResponse, error) {
-	var result = new(VmsResponse)
+func (vmsApi *VmsApi) Get(ctx context.Context, id string) (*VmsCollectionResponse, error) {
+	var result = new(VmsCollectionResponse)
 
 	v := struct {
 		Status string `url:"status"`

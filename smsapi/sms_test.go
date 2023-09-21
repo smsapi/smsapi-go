@@ -132,7 +132,7 @@ func TestGetSms(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/sms.do", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, readFixture("sms/sms.json"))
+		fmt.Fprint(w, readFixture("sms/collection.json"))
 
 		assertRequestMethod(t, r, "GET")
 		assertRequestQueryParam(t, r, "format", "json")
@@ -141,7 +141,7 @@ func TestGetSms(t *testing.T) {
 
 	result, _ := client.Sms.Get(ctx, "1")
 
-	expected := createSmsResponse()
+	expected := createSmsResultCollection()
 
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("Given: %+v Expected: %+v", result, expected)
