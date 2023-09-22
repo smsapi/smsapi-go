@@ -1,5 +1,8 @@
 # Changes
 
+## 1.1.3
+- Fix MMS response points attribute type
+
 ## 1.1.2
 - Fix sms,mms,vms GET endpoints
 

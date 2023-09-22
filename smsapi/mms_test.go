@@ -173,7 +173,7 @@ func createMmsCollectionResponse() *MmsCollectionResponse {
 func createMmsResponse() *MmsResponse {
 	return &MmsResponse{
 		Id:              "1",
-		Points:          "0.1000",
+		Points:          0.1,
 		Number:          "48100200300",
 		DateSent:        &Timestamp{time.Unix(1560252588, 0)},
 		SubmittedNumber: "100200300",
