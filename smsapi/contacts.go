@@ -378,7 +378,7 @@ func (contactsApi *ContactsApi) UpdateCustomField(ctx context.Context, fieldId, 
 
 	var result = new(CustomField)
 
-	err := contactsApi.client.Urlencoded(ctx, http.MethodPost, uri, result, field)
+	err := contactsApi.client.Urlencoded(ctx, http.MethodPut, uri, result, field)
 
 	return result, err
 }
