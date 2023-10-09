@@ -63,10 +63,16 @@ func (senderApi *SenderApi) Delete(ctx context.Context, name string) error {
 	return err
 }
 
-func (senderApi *SenderApi) Activate(ctx context.Context, name string) error {
+func (senderApi *SenderApi) Activate(ctx context.Context, name, code string) error {
 	uri := fmt.Sprintf("/sms/sendernames/%s/commands/activate", name)
 
-	err := senderApi.client.Post(ctx, uri, nil, nil)
+	payload := struct {
+		Code string `json:"code"`
+	}{
+		Code: code,
+	}
+
+	err := senderApi.client.Put(ctx, uri, nil, &payload)
 
 	return err
 }
