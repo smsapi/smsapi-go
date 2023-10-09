@@ -1,5 +1,9 @@
 # Changes
 
+## 1.1.4
+- Fix update contacts custom field API method
+- Fix activate sendername API method
+
 ## 1.1.3
 - Fix MMS response points attribute type
 
