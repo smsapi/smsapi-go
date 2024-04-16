@@ -1,5 +1,8 @@
 # Changes
 
+## 1.2.1
+- FIX: Extract Profile and Sub-users API end-to-end tests
+
 ## 1.2.0
 - Extract Profile and Sub-users API
 

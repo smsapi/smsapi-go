@@ -10,17 +10,6 @@ var (
 	userId string
 )
 
-func TestGetUserDetails(t *testing.T) {
-	ctx, cancel := createCtx()
-	defer cancel()
-
-	_, err := client.Account.Details(ctx)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 func TestCreateUser(t *testing.T) {
 	data := &smsapi.User{
 		Credentials: &smsapi.UserCredentials{
@@ -39,7 +28,7 @@ func TestCreateUser(t *testing.T) {
 	ctx, cancel := createCtx()
 	defer cancel()
 
-	user, err := client.Account.CreateUser(ctx, data)
+	user, err := client.Subusers.CreateUser(ctx, data)
 
 	if err != nil {
 		log.Fatal(err)
@@ -52,7 +41,7 @@ func TestGetUser(t *testing.T) {
 	ctx, cancel := createCtx()
 	defer cancel()
 
-	_, err := client.Account.GetUser(ctx, userId)
+	_, err := client.Subusers.GetUser(ctx, userId)
 
 	if err != nil {
 		log.Fatal(err)
@@ -63,7 +52,7 @@ func TestGetUsersList(t *testing.T) {
 	ctx, cancel := createCtx()
 	defer cancel()
 
-	_, err := client.Account.ListUsers(ctx)
+	_, err := client.Subusers.ListUsers(ctx)
 
 	if err != nil {
 		log.Fatal(err)
@@ -84,7 +73,7 @@ func TestUpdateUser(t *testing.T) {
 	ctx, cancel := createCtx()
 	defer cancel()
 
-	user, err := client.Account.UpdateUser(ctx, userId, data)
+	user, err := client.Subusers.UpdateUser(ctx, userId, data)
 
 	if err != nil {
 		log.Fatal(err)
@@ -97,7 +86,7 @@ func TestRemoveUser(t *testing.T) {
 	ctx, cancel := createCtx()
 	defer cancel()
 
-	err := client.Account.DeleteUser(ctx, userId)
+	err := client.Subusers.DeleteUser(ctx, userId)
 
 	if err != nil {
 		log.Fatal(err)
