@@ -6,30 +6,11 @@ import (
 )
 
 const (
-	profileApiPath = "/profile"
-	usersApiPath   = "/subusers"
+	usersApiPath = "/subusers"
 )
 
-type AccountApi struct {
+type SubusersApi struct {
 	client *Client
-}
-
-type AccountDetailsResponse struct {
-	Name        string  `json:"name,omitempty"`
-	Email       string  `json:"email,omitempty"`
-	Username    string  `json:"username,omitempty"`
-	PhoneNumber string  `json:"phone_number,omitempty"`
-	PaymentType string  `json:"payment_type,omitempty"`
-	UserType    string  `json:"user_type,omitempty"`
-	Points      float32 `json:"points,omitempty"`
-}
-
-func (accountApi *AccountApi) Details(ctx context.Context) (*AccountDetailsResponse, error) {
-	var result = new(AccountDetailsResponse)
-
-	err := accountApi.client.Get(ctx, profileApiPath, result)
-
-	return result, err
 }
 
 type User struct {
@@ -63,7 +44,7 @@ type UserCollectionResponse struct {
 	Collection []*UserResponse `json:"collection"`
 }
 
-func (accountApi *AccountApi) GetUser(ctx context.Context, id string) (*UserResponse, error) {
+func (accountApi *SubusersApi) GetUser(ctx context.Context, id string) (*UserResponse, error) {
 	var result = new(UserResponse)
 
 	uri := fmt.Sprintf("%s/%s", usersApiPath, id)
@@ -73,7 +54,7 @@ func (accountApi *AccountApi) GetUser(ctx context.Context, id string) (*UserResp
 	return result, err
 }
 
-func (accountApi *AccountApi) CreateUser(ctx context.Context, user *User) (*UserResponse, error) {
+func (accountApi *SubusersApi) CreateUser(ctx context.Context, user *User) (*UserResponse, error) {
 	var result = new(UserResponse)
 
 	err := accountApi.client.Post(ctx, usersApiPath, result, user)
@@ -81,17 +62,17 @@ func (accountApi *AccountApi) CreateUser(ctx context.Context, user *User) (*User
 	return result, err
 }
 
-func (accountApi *AccountApi) UpdateUser(ctx context.Context, id string, user *User) (*UserResponse, error) {
+func (accountApi *SubusersApi) UpdateUser(ctx context.Context, id string, user *User) (*UserResponse, error) {
 	var result = new(UserResponse)
 
-	uri := fmt.Sprintf("/subusers/%s", id)
+	uri := fmt.Sprintf("%s/%s", usersApiPath, id)
 
 	err := accountApi.client.Put(ctx, uri, result, user)
 
 	return result, err
 }
 
-func (accountApi *AccountApi) DeleteUser(ctx context.Context, id string) error {
+func (accountApi *SubusersApi) DeleteUser(ctx context.Context, id string) error {
 	uri := fmt.Sprintf("%s/%s", usersApiPath, id)
 
 	err := accountApi.client.Delete(ctx, uri)
@@ -99,7 +80,7 @@ func (accountApi *AccountApi) DeleteUser(ctx context.Context, id string) error {
 	return err
 }
 
-func (accountApi *AccountApi) ListUsers(ctx context.Context) (*UserCollectionResponse, error) {
+func (accountApi *SubusersApi) ListUsers(ctx context.Context) (*UserCollectionResponse, error) {
 	var result = new(UserCollectionResponse)
 
 	err := accountApi.client.Get(ctx, usersApiPath, result)

@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	Version        = "1.1.4"
+	Version        = "1.2.0"
 	Name           = "smsapi-go"
 	BaseUrlPl      = "https://api.smsapi.pl/"
 	BaseUrlCom     = "https://api.smsapi.com/"
@@ -44,7 +44,8 @@ type Client struct {
 	Auth    *BearerAuth
 
 	Sms       *SmsApi
-	Account   *AccountApi
+	Profile   *ProfileApi
+	Subusers  *SubusersApi
 	Contacts  *ContactsApi
 	ShortUrl  *ShortUrlApi
 	Hlr       *HlrApi
@@ -72,7 +73,8 @@ func NewClient(apiUrl string, accessToken string, httpClient *http.Client) *Clie
 	}
 
 	c.Sms = &SmsApi{client: c}
-	c.Account = &AccountApi{client: c}
+	c.Profile = &ProfileApi{client: c}
+	c.Subusers = &SubusersApi{client: c}
 	c.Contacts = &ContactsApi{client: c}
 	c.ShortUrl = &ShortUrlApi{client: c}
 	c.Hlr = &HlrApi{client: c}

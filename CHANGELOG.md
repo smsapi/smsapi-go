@@ -1,5 +1,8 @@
 # Changes
 
+## 1.2.0
+- Extract Profile and Sub-users API
+
 ## 1.1.4
 - Fix update contacts custom field API method
 - Fix activate sendername API method

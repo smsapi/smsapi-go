@@ -7,34 +7,6 @@ import (
 	"testing"
 )
 
-func TestGetAccountDetails(t *testing.T) {
-	client, mux, teardown := setup()
-
-	defer teardown()
-
-	mux.HandleFunc("/profile", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, readFixture("account/details.json"))
-
-		assertRequestMethod(t, r, "GET")
-	})
-
-	result, _ := client.Account.Details(ctx)
-
-	expected := &AccountDetailsResponse{
-		Points:      0,
-		Email:       "test",
-		Name:        "test",
-		PaymentType: "prepaid",
-		PhoneNumber: "100200300",
-		Username:    "test",
-		UserType:    "native",
-	}
-
-	if !reflect.DeepEqual(result, expected) {
-		t.Errorf("Given: %+v Expected: %+v", result, expected)
-	}
-}
-
 func TestCreateAccountUser(t *testing.T) {
 	client, mux, teardown := setup()
 
@@ -57,7 +29,7 @@ func TestCreateAccountUser(t *testing.T) {
 		assertRequestBody(t, r, new(User), user)
 	})
 
-	result, _ := client.Account.CreateUser(ctx, user)
+	result, _ := client.Subusers.CreateUser(ctx, user)
 
 	expected := createUserResponse()
 
@@ -85,7 +57,7 @@ func TestUpdateAccountUser(t *testing.T) {
 		assertRequestBody(t, r, new(User), user)
 	})
 
-	result, _ := client.Account.UpdateUser(ctx, "1", user)
+	result, _ := client.Subusers.UpdateUser(ctx, "1", user)
 
 	expected := createUserResponse()
 
@@ -105,7 +77,7 @@ func TestGetAccountUser(t *testing.T) {
 		assertRequestMethod(t, r, "GET")
 	})
 
-	result, _ := client.Account.GetUser(ctx, "1")
+	result, _ := client.Subusers.GetUser(ctx, "1")
 
 	expected := createUserResponse()
 
@@ -123,7 +95,7 @@ func TestDeleteAccountUser(t *testing.T) {
 		assertRequestMethod(t, r, "DELETE")
 	})
 
-	client.Account.DeleteUser(ctx, "1")
+	client.Subusers.DeleteUser(ctx, "1")
 }
 
 func TestGetUsersList(t *testing.T) {
@@ -136,7 +108,7 @@ func TestGetUsersList(t *testing.T) {
 		assertRequestMethod(t, r, "GET")
 	})
 
-	result, _ := client.Account.ListUsers(ctx)
+	result, _ := client.Subusers.ListUsers(ctx)
 
 	expected := &UserCollectionResponse{
 		Size: 1,
@@ -144,7 +116,6 @@ func TestGetUsersList(t *testing.T) {
 			createUserResponse(),
 		},
 	}
-
 
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("Given: %+v Expected: %+v", result, expected)
