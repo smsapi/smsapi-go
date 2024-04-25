@@ -1,5 +1,8 @@
 # Changes
 
+## 1.2.2
+- Fix Sub-user API parameters naming
+
 ## 1.2.1
 - FIX: Extract Profile and Sub-users API end-to-end tests
 

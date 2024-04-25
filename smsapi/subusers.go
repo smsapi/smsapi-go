@@ -15,8 +15,8 @@ type SubusersApi struct {
 
 type User struct {
 	Credentials *UserCredentials `json:"credentials"`
-	Active      bool             `json:"Active"`
-	Description string           `json:"Description"`
+	Active      bool             `json:"active"`
+	Description string           `json:"description"`
 	Points      *UserPoints      `json:"points"`
 }
 
