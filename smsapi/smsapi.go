@@ -5,13 +5,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/google/go-querystring/query"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/google/go-querystring/query"
 )
 
 const (
@@ -27,6 +28,7 @@ type ContentType string
 const (
 	ContentTypeJson            = ContentType("application/json")
 	ContentTypeXFormUrlencoded = ContentType("application/x-www-form-urlencoded")
+	ContentTypeTextCsv         = ContentType("text/csv")
 )
 
 type BearerAuth struct {
@@ -43,14 +45,19 @@ type Client struct {
 	BaseUrl *url.URL
 	Auth    *BearerAuth
 
-	Sms       *SmsApi
-	Profile   *ProfileApi
-	Subusers  *SubusersApi
-	Contacts  *ContactsApi
-	ShortUrl  *ShortUrlApi
-	Hlr       *HlrApi
-	Sender    *SenderApi
-	Blacklist *BlacklistApi
+	Sms          *SmsApi
+	Profile      *ProfileApi
+	Subusers     *SubusersApi
+	Contacts     *ContactsApi
+	ShortUrl     *ShortUrlApi
+	Hlr          *HlrApi
+	Sender       *SenderApi
+	Blacklist    *BlacklistApi
+	Callbacks    *CallbacksApi
+	Mfa          *MfaApi
+	OptOut       *OptOutApi
+	SmsTemplates *SmsTemplatesApi
+	Shipment     *ShipmentApi
 
 	Mms *MmsApi
 	Vms *VmsApi
@@ -80,6 +87,11 @@ func NewClient(apiUrl string, accessToken string, httpClient *http.Client) *Clie
 	c.Hlr = &HlrApi{client: c}
 	c.Sender = &SenderApi{client: c}
 	c.Blacklist = &BlacklistApi{client: c}
+	c.Callbacks = &CallbacksApi{client: c}
+	c.Mfa = &MfaApi{client: c}
+	c.OptOut = &OptOutApi{client: c}
+	c.SmsTemplates = &SmsTemplatesApi{client: c}
+	c.Shipment = &ShipmentApi{client: c}
 
 	return c
 }
@@ -233,6 +245,16 @@ func (client *Client) Post(ctx context.Context, path string, result interface{},
 
 func (client *Client) Put(ctx context.Context, path string, result interface{}, data interface{}) error {
 	req, err := client.NewJsonRequest("PUT", path, data)
+
+	if err != nil {
+		return err
+	}
+
+	return client.executeRequest(ctx, req, result)
+}
+
+func (client *Client) PostRaw(ctx context.Context, path string, body io.Reader, contentType ContentType, result interface{}) error {
+	req, err := client.NewRequest("POST", path, body, contentType)
 
 	if err != nil {
 		return err

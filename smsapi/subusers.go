@@ -87,3 +87,67 @@ func (accountApi *SubusersApi) ListUsers(ctx context.Context) (*UserCollectionRe
 
 	return result, err
 }
+
+type SubuserAccess struct {
+	Access    string   `json:"access"`
+	Senders   []string `json:"senders,omitempty"`
+	Templates []string `json:"templates,omitempty"`
+	Numbers   []string `json:"numbers,omitempty"`
+}
+
+type SubuserSharesResponse struct {
+	Sendernames *SubuserAccess `json:"sendernames,omitempty"`
+	Blacklist   *SubuserAccess `json:"blacklist,omitempty"`
+	Templates   *SubuserAccess `json:"templates,omitempty"`
+}
+
+// GetShares returns the subuser shares overview (sendernames, blacklist, templates).
+func (accountApi *SubusersApi) GetShares(ctx context.Context, id string) (*SubuserSharesResponse, error) {
+	var result = new(SubuserSharesResponse)
+
+	uri := fmt.Sprintf("%s/%s/shares", usersApiPath, id)
+
+	err := accountApi.client.Get(ctx, uri, result)
+
+	return result, err
+}
+
+// GetSendernamesAccess returns the subuser's native sendernames access configuration.
+func (accountApi *SubusersApi) GetSendernamesAccess(ctx context.Context, id string) (*SubuserAccess, error) {
+	var result = new(SubuserAccess)
+
+	uri := fmt.Sprintf("%s/%s/shares/sendernames", usersApiPath, id)
+
+	err := accountApi.client.Get(ctx, uri, result)
+
+	return result, err
+}
+
+// UpdateSendernamesAccess updates the subuser's native sendernames access configuration.
+func (accountApi *SubusersApi) UpdateSendernamesAccess(ctx context.Context, id string, access *SubuserAccess) error {
+	uri := fmt.Sprintf("%s/%s/shares/sendernames", usersApiPath, id)
+
+	return accountApi.client.Put(ctx, uri, nil, access)
+}
+
+// GetTemplatesAccess returns the subuser's native templates access configuration.
+func (accountApi *SubusersApi) GetTemplatesAccess(ctx context.Context, id string) (*SubuserAccess, error) {
+	var result = new(SubuserAccess)
+
+	uri := fmt.Sprintf("%s/%s/shares/templates", usersApiPath, id)
+
+	err := accountApi.client.Get(ctx, uri, result)
+
+	return result, err
+}
+
+// UpdateTemplatesAccess updates the subuser's native templates access configuration.
+func (accountApi *SubusersApi) UpdateTemplatesAccess(ctx context.Context, id string, access *SubuserAccess) (*SubuserAccess, error) {
+	var result = new(SubuserAccess)
+
+	uri := fmt.Sprintf("%s/%s/shares/templates", usersApiPath, id)
+
+	err := accountApi.client.Put(ctx, uri, result, access)
+
+	return result, err
+}

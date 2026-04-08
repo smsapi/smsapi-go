@@ -34,3 +34,24 @@ func TestGetAccountDetails(t *testing.T) {
 		t.Errorf("Given: %+v Expected: %+v", result, expected)
 	}
 }
+
+func TestGetProfilePrices(t *testing.T) {
+	client, mux, teardown := setup()
+
+	defer teardown()
+
+	mux.HandleFunc("/profile/prices", func(w http.ResponseWriter, r *http.Request) {
+		assertRequestMethod(t, r, "GET")
+		assertRequestQueryParam(t, r, "type", "eco")
+		fmt.Fprint(w, `{"size":1,"collection":[{"price":{"value":"0.08","currency":"PLN"},"country":"PL","network":"Plus","changed_at":"2024-01-01"}]}`)
+	})
+
+	result, err := client.Profile.Prices(ctx, "eco")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if result.Size != 1 || result.Collection[0].Country != "PL" || result.Collection[0].Price.Value != "0.08" {
+		t.Errorf("Unexpected: %+v", result)
+	}
+}

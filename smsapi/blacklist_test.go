@@ -2,11 +2,38 @@ package smsapi
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"reflect"
 	"testing"
 	"time"
 )
+
+func TestBlacklistImportPhoneNumbers(t *testing.T) {
+	client, mux, teardown := setup()
+	defer teardown()
+
+	csv := "48500500500\n48500500501\n"
+
+	mux.HandleFunc("/blacklist/phone_numbers/imports", func(w http.ResponseWriter, r *http.Request) {
+		assertRequestMethod(t, r, "POST")
+
+		if ct := r.Header.Get("Content-Type"); ct != "text/csv" {
+			t.Errorf("Content-Type expected text/csv, got: %s", ct)
+		}
+
+		body, _ := ioutil.ReadAll(r.Body)
+		if string(body) != csv {
+			t.Errorf("Body expected: %q, got: %q", csv, string(body))
+		}
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+
+	if err := client.Blacklist.ImportPhoneNumbersCsv(ctx, csv); err != nil {
+		t.Fatal(err)
+	}
+}
 
 func TestAddPhoneNumber(t *testing.T) {
 	client, mux, teardown := setup()

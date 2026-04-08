@@ -3,6 +3,8 @@ package smsapi
 import (
 	"context"
 	"fmt"
+	"io"
+	"strings"
 )
 
 const blacklistApiPath = "/blacklist/phone_numbers"
@@ -78,6 +80,18 @@ func (blacklistApi *BlacklistApi) DeleteAllPhoneNumbers(ctx context.Context) err
 	err := blacklistApi.client.Delete(ctx, blacklistApiPath)
 
 	return err
+}
+
+// ImportPhoneNumbers uploads a CSV file containing phone numbers to be added
+// to the blacklist. Accepts any io.Reader that yields CSV content.
+func (blacklistApi *BlacklistApi) ImportPhoneNumbers(ctx context.Context, csv io.Reader) error {
+	return blacklistApi.client.PostRaw(ctx, "/blacklist/phone_numbers/imports", csv, ContentTypeTextCsv, nil)
+}
+
+// ImportPhoneNumbersCsv is a convenience wrapper for ImportPhoneNumbers
+// taking a raw CSV string.
+func (blacklistApi *BlacklistApi) ImportPhoneNumbersCsv(ctx context.Context, csv string) error {
+	return blacklistApi.ImportPhoneNumbers(ctx, strings.NewReader(csv))
 }
 
 func (blacklistApi *BlacklistApi) DeletePhoneNumber(ctx context.Context, id string) error {

@@ -63,6 +63,20 @@ func (senderApi *SenderApi) Delete(ctx context.Context, name string) error {
 	return err
 }
 
+type SendernameStatement struct {
+	Content string `json:"content"`
+}
+
+// GetStatement returns the current statement that must be agreed to when
+// requesting a new sendername.
+func (senderApi *SenderApi) GetStatement(ctx context.Context) (*SendernameStatement, error) {
+	var result = new(SendernameStatement)
+
+	err := senderApi.client.Get(ctx, "/sms/sendernames/statement", result)
+
+	return result, err
+}
+
 func (senderApi *SenderApi) MakeDefault(ctx context.Context, name string) error {
 	uri := fmt.Sprintf("/sms/sendernames/%s/commands/make_default", name)
 

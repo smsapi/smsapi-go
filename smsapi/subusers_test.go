@@ -122,6 +122,97 @@ func TestGetUsersList(t *testing.T) {
 	}
 }
 
+func TestGetSubuserShares(t *testing.T) {
+	client, mux, teardown := setup()
+	defer teardown()
+
+	mux.HandleFunc("/subusers/1/shares", func(w http.ResponseWriter, r *http.Request) {
+		assertRequestMethod(t, r, "GET")
+		fmt.Fprint(w, `{"sendernames":{"access":"all"},"blacklist":{"access":"none"},"templates":{"access":"selected","templates":["t1"]}}`)
+	})
+
+	result, err := client.Subusers.GetShares(ctx, "1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Sendernames.Access != "all" || result.Templates.Access != "selected" || len(result.Templates.Templates) != 1 {
+		t.Errorf("Unexpected: %+v", result)
+	}
+}
+
+func TestGetSubuserSendernamesAccess(t *testing.T) {
+	client, mux, teardown := setup()
+	defer teardown()
+
+	mux.HandleFunc("/subusers/1/shares/sendernames", func(w http.ResponseWriter, r *http.Request) {
+		assertRequestMethod(t, r, "GET")
+		fmt.Fprint(w, `{"access":"selected","senders":["Info","Alert"]}`)
+	})
+
+	result, err := client.Subusers.GetSendernamesAccess(ctx, "1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Access != "selected" || len(result.Senders) != 2 {
+		t.Errorf("Unexpected: %+v", result)
+	}
+}
+
+func TestUpdateSubuserSendernamesAccess(t *testing.T) {
+	client, mux, teardown := setup()
+	defer teardown()
+
+	access := &SubuserAccess{Access: "all"}
+
+	mux.HandleFunc("/subusers/1/shares/sendernames", func(w http.ResponseWriter, r *http.Request) {
+		assertRequestMethod(t, r, "PUT")
+		assertRequestJsonContains(t, r, "access", "all")
+	})
+
+	if err := client.Subusers.UpdateSendernamesAccess(ctx, "1", access); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestGetSubuserTemplatesAccess(t *testing.T) {
+	client, mux, teardown := setup()
+	defer teardown()
+
+	mux.HandleFunc("/subusers/1/shares/templates", func(w http.ResponseWriter, r *http.Request) {
+		assertRequestMethod(t, r, "GET")
+		fmt.Fprint(w, `{"access":"all"}`)
+	})
+
+	result, err := client.Subusers.GetTemplatesAccess(ctx, "1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Access != "all" {
+		t.Errorf("Unexpected: %+v", result)
+	}
+}
+
+func TestUpdateSubuserTemplatesAccess(t *testing.T) {
+	client, mux, teardown := setup()
+	defer teardown()
+
+	access := &SubuserAccess{Access: "selected", Templates: []string{"t1"}}
+
+	mux.HandleFunc("/subusers/1/shares/templates", func(w http.ResponseWriter, r *http.Request) {
+		assertRequestMethod(t, r, "PUT")
+		assertRequestJsonContains(t, r, "access", "selected")
+		fmt.Fprint(w, `{"access":"selected","templates":["t1"]}`)
+	})
+
+	result, err := client.Subusers.UpdateTemplatesAccess(ctx, "1", access)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Access != "selected" || len(result.Templates) != 1 {
+		t.Errorf("Unexpected: %+v", result)
+	}
+}
+
 func createUserResponse() *UserResponse {
 	return &UserResponse{
 		Id:          "1",

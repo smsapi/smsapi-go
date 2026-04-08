@@ -108,6 +108,26 @@ func TestDeleteSender(t *testing.T) {
 	}
 }
 
+func TestGetSendernameStatement(t *testing.T) {
+	client, mux, teardown := setup()
+
+	defer teardown()
+
+	mux.HandleFunc("/sms/sendernames/statement", func(w http.ResponseWriter, r *http.Request) {
+		assertRequestMethod(t, r, "GET")
+		fmt.Fprint(w, `{"content":"Statement text"}`)
+	})
+
+	result, err := client.Sender.GetStatement(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if result.Content != "Statement text" {
+		t.Errorf("Unexpected: %+v", result)
+	}
+}
+
 func TestMakeDefaultSender(t *testing.T) {
 	client, mux, teardown := setup()
 
