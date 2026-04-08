@@ -10,10 +10,10 @@ type MfaApi struct {
 }
 
 type CreateMfaCode struct {
-	PhoneNumber string `json:"phone_number" url:"phone_number"`
-	From        string `json:"from,omitempty" url:"from,omitempty"`
-	Content     string `json:"content,omitempty" url:"content,omitempty"`
-	Fast        bool   `json:"fast,omitempty" url:"fast,omitempty"`
+	PhoneNumber string `json:"phone_number"`
+	From        string `json:"from,omitempty"`
+	Content     string `json:"content,omitempty"`
+	Fast        *bool  `json:"fast,omitempty"`
 }
 
 type MfaCode struct {

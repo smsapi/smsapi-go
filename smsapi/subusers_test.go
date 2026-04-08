@@ -12,9 +12,10 @@ func TestCreateAccountUser(t *testing.T) {
 
 	defer teardown()
 
+	active := true
 	user := &User{
 		Credentials: nil,
-		Active:      true,
+		Active:      &active,
 		Description: "test user",
 		Points: &UserPoints{
 			FromAccount: 100,
@@ -43,9 +44,10 @@ func TestUpdateAccountUser(t *testing.T) {
 
 	defer teardown()
 
+	inactive := false
 	user := &User{
 		Credentials: nil,
-		Active:      false,
+		Active:      &inactive,
 		Description: "updated description",
 		Points:      nil,
 	}
@@ -108,7 +110,7 @@ func TestGetUsersList(t *testing.T) {
 		assertRequestMethod(t, r, "GET")
 	})
 
-	result, _ := client.Subusers.ListUsers(ctx)
+	result, _ := client.Subusers.ListUsers(ctx, nil)
 
 	expected := &UserCollectionResponse{
 		Size: 1,
@@ -119,6 +121,22 @@ func TestGetUsersList(t *testing.T) {
 
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("Given: %+v Expected: %+v", result, expected)
+	}
+}
+
+func TestListUsersWithQuery(t *testing.T) {
+	client, mux, teardown := setup()
+	defer teardown()
+
+	mux.HandleFunc("/subusers", func(w http.ResponseWriter, r *http.Request) {
+		assertRequestMethod(t, r, "GET")
+		assertRequestQueryParam(t, r, "q", "john")
+		fmt.Fprint(w, `{"size":0,"collection":[]}`)
+	})
+
+	_, err := client.Subusers.ListUsers(ctx, &UserCollectionFilters{Query: "john"})
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 

@@ -15,7 +15,7 @@ type SubusersApi struct {
 
 type User struct {
 	Credentials *UserCredentials `json:"credentials"`
-	Active      bool             `json:"active"`
+	Active      *bool            `json:"active,omitempty"`
 	Description string           `json:"description"`
 	Points      *UserPoints      `json:"points"`
 }
@@ -42,6 +42,10 @@ type UserResponse struct {
 type UserCollectionResponse struct {
 	Size       int             `json:"size"`
 	Collection []*UserResponse `json:"collection"`
+}
+
+type UserCollectionFilters struct {
+	Query string `url:"q,omitempty"`
 }
 
 func (accountApi *SubusersApi) GetUser(ctx context.Context, id string) (*UserResponse, error) {
@@ -80,10 +84,12 @@ func (accountApi *SubusersApi) DeleteUser(ctx context.Context, id string) error 
 	return err
 }
 
-func (accountApi *SubusersApi) ListUsers(ctx context.Context) (*UserCollectionResponse, error) {
+func (accountApi *SubusersApi) ListUsers(ctx context.Context, filters *UserCollectionFilters) (*UserCollectionResponse, error) {
 	var result = new(UserCollectionResponse)
 
-	err := accountApi.client.Get(ctx, usersApiPath, result)
+	uri, _ := addQueryParams(usersApiPath, filters)
+
+	err := accountApi.client.Get(ctx, uri, result)
 
 	return result, err
 }

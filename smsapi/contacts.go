@@ -4,6 +4,9 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
+	"strconv"
+	"strings"
 )
 
 const contactsApiPath = "/contacts"
@@ -106,7 +109,7 @@ func (contactsApi *ContactsApi) UpdateContact(ctx context.Context, id string, co
 
 	var result = new(Contact)
 
-	err := contactsApi.client.Put(ctx, uri, result, contact)
+	err := contactsApi.client.Urlencoded(ctx, http.MethodPut, uri, result, contact)
 
 	return result, err
 }
@@ -209,7 +212,7 @@ func (contactsApi *ContactsApi) UpdateGroup(ctx context.Context, groupId string,
 
 	var result = new(ContactGroup)
 
-	err := contactsApi.client.Put(ctx, uri, result, group)
+	err := contactsApi.client.Urlencoded(ctx, http.MethodPut, uri, result, group)
 
 	return result, err
 }
@@ -219,7 +222,7 @@ func (contactsApi *ContactsApi) GetGroup(ctx context.Context, groupId string) (*
 
 	var result = new(ContactGroup)
 
-	err := contactsApi.client.Get(ctx, uri, nil)
+	err := contactsApi.client.Get(ctx, uri, result)
 
 	return result, err
 }
@@ -233,27 +236,21 @@ func (contactsApi *ContactsApi) DeleteGroup(ctx context.Context, groupId string)
 }
 
 func (contactsApi *ContactsApi) MoveContactsToGroup(ctx context.Context, groupId string, filters *ContactListFilters) error {
-	uri, _ := addQueryParams(fmt.Sprintf("contacts/groups/%s/members", groupId), filters)
+	uri := fmt.Sprintf("contacts/groups/%s/members", groupId)
 
-	err := contactsApi.client.Put(ctx, uri, nil, nil)
-
-	return err
+	return contactsApi.client.Urlencoded(ctx, http.MethodPut, uri, nil, filters)
 }
 
 func (contactsApi *ContactsApi) AddContactsToGroup(ctx context.Context, groupId string, filters *ContactListFilters) error {
-	uri, _ := addQueryParams(fmt.Sprintf("contacts/groups/%s/members", groupId), filters)
+	uri := fmt.Sprintf("contacts/groups/%s/members", groupId)
 
-	err := contactsApi.client.Post(ctx, uri, nil, nil)
-
-	return err
+	return contactsApi.client.Urlencoded(ctx, http.MethodPost, uri, nil, filters)
 }
 
 func (contactsApi *ContactsApi) RemoveContactsFromGroup(ctx context.Context, groupId string, filters *ContactListFilters) error {
-	uri, _ := addQueryParams(fmt.Sprintf("contacts/groups/%s/members", groupId), filters)
+	uri := fmt.Sprintf("contacts/groups/%s/members", groupId)
 
-	err := contactsApi.client.Delete(ctx, uri)
-
-	return err
+	return contactsApi.client.Urlencoded(ctx, http.MethodDelete, uri, nil, filters)
 }
 
 func (contactsApi *ContactsApi) AddContactToGroup(ctx context.Context, groupId, contactId string) (*Contact, error) {
@@ -304,7 +301,7 @@ func (contactsApi *ContactsApi) AddGroupPermissions(ctx context.Context, groupId
 
 	var result = new(ContactGroupPermissions)
 
-	err := contactsApi.client.Post(ctx, uri, result, permissions)
+	err := contactsApi.client.Urlencoded(ctx, http.MethodPost, uri, result, permissions)
 
 	return result, err
 }
@@ -324,7 +321,7 @@ func (contactsApi *ContactsApi) AddUserGroupPermissions(ctx context.Context, gro
 
 	var result = new(ContactGroupPermissions)
 
-	err := contactsApi.client.Put(ctx, uri, result, permissions)
+	err := contactsApi.client.Urlencoded(ctx, http.MethodPut, uri, result, permissions)
 
 	return result, err
 }
@@ -389,4 +386,66 @@ func (contactsApi *ContactsApi) DeleteCustomField(ctx context.Context, fieldId s
 	err := contactsApi.client.Delete(ctx, uri)
 
 	return err
+}
+
+// AssignContactToGroups assigns a contact to multiple groups at once.
+// The request body is urlencoded with numeric keys mapping to group ids
+// (e.g. 0=<groupId1>&1=<groupId2>).
+func (contactsApi *ContactsApi) AssignContactToGroups(ctx context.Context, contactId string, groupIds []string) (*ContactGroupsCollectionResponse, error) {
+	uri := fmt.Sprintf("/contacts/%s/groups", contactId)
+
+	values := url.Values{}
+	for i, groupId := range groupIds {
+		values.Set(strconv.Itoa(i), groupId)
+	}
+
+	var result = new(ContactGroupsCollectionResponse)
+
+	err := contactsApi.client.PostRaw(ctx, uri, strings.NewReader(values.Encode()), ContentTypeXFormUrlencoded, result)
+
+	return result, err
+}
+
+func (contactsApi *ContactsApi) CleanTrash(ctx context.Context) error {
+	return contactsApi.client.Delete(ctx, "/contacts/trash")
+}
+
+func (contactsApi *ContactsApi) RestoreTrash(ctx context.Context) error {
+	return contactsApi.client.Urlencoded(ctx, http.MethodPut, "/contacts/trash/restore", nil, nil)
+}
+
+type FieldOption struct {
+	Name  string `json:"name,omitempty"`
+	Value string `json:"value,omitempty"`
+}
+
+type FieldOptionsCollectionResponse struct {
+	Size       int            `json:"size"`
+	Collection []*FieldOption `json:"collection"`
+}
+
+func (contactsApi *ContactsApi) GetCustomFieldOptions(ctx context.Context, fieldId string) (*FieldOptionsCollectionResponse, error) {
+	uri := fmt.Sprintf("contacts/fields/%s/options", fieldId)
+
+	var result = new(FieldOptionsCollectionResponse)
+
+	err := contactsApi.client.Get(ctx, uri, result)
+
+	return result, err
+}
+
+type AvailableField struct {
+	Id      string   `json:"id,omitempty"`
+	Name    string   `json:"name,omitempty"`
+	Type    string   `json:"type,omitempty"`
+	BuiltIn bool     `json:"built_in,omitempty"`
+	Options []string `json:"options,omitempty"`
+}
+
+func (contactsApi *ContactsApi) GetAvailableFields(ctx context.Context) ([]*AvailableField, error) {
+	var result []*AvailableField
+
+	err := contactsApi.client.Get(ctx, "contacts/fields/available", &result)
+
+	return result, err
 }

@@ -11,13 +11,14 @@ var (
 )
 
 func TestCreateUser(t *testing.T) {
+	active := true
 	data := &smsapi.User{
 		Credentials: &smsapi.UserCredentials{
 			Username:    "go-smsapi",
 			Password:    "Go-smsapi-1",
 			ApiPassword: "Go-smsapi-1",
 		},
-		Active:      true,
+		Active:      &active,
 		Description: "go-smsapi",
 		Points: &smsapi.UserPoints{
 			FromAccount: 10,
@@ -52,7 +53,7 @@ func TestGetUsersList(t *testing.T) {
 	ctx, cancel := createCtx()
 	defer cancel()
 
-	_, err := client.Subusers.ListUsers(ctx)
+	_, err := client.Subusers.ListUsers(ctx, nil)
 
 	if err != nil {
 		log.Fatal(err)

@@ -2,7 +2,9 @@ package smsapi
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"net/url"
 	"reflect"
 	"testing"
 )
@@ -109,7 +111,7 @@ func TestUpdateContact(t *testing.T) {
 		fmt.Fprint(w, readFixture("contacts/contact.json"))
 
 		assertRequestMethod(t, r, "PUT")
-		assertRequestBody(t, r, new(Contact), contact)
+		assertRequestUrlencoded(t, r, contact)
 	})
 
 	result, _ := client.Contacts.UpdateContact(ctx, "1", contact)
@@ -332,14 +334,14 @@ func TestMoveContactsToGroup(t *testing.T) {
 
 	defer teardown()
 
-	mux.HandleFunc("/contacts/groups/1/members", func(w http.ResponseWriter, r *http.Request) {
-		assertRequestMethod(t, r, "PUT")
-		assertRequestQueryParam(t, r, "q", "some-query")
-	})
-
 	filters := &ContactListFilters{
 		Query: "some-query",
 	}
+
+	mux.HandleFunc("/contacts/groups/1/members", func(w http.ResponseWriter, r *http.Request) {
+		assertRequestMethod(t, r, "PUT")
+		assertRequestUrlencoded(t, r, filters)
+	})
 
 	err := client.Contacts.MoveContactsToGroup(ctx, "1", filters)
 
@@ -353,14 +355,14 @@ func TestAddContactsToGroup(t *testing.T) {
 
 	defer teardown()
 
-	mux.HandleFunc("/contacts/groups/1/members", func(w http.ResponseWriter, r *http.Request) {
-		assertRequestMethod(t, r, "POST")
-		assertRequestQueryParam(t, r, "gender", "male")
-	})
-
 	filters := &ContactListFilters{
 		Gender: "male",
 	}
+
+	mux.HandleFunc("/contacts/groups/1/members", func(w http.ResponseWriter, r *http.Request) {
+		assertRequestMethod(t, r, "POST")
+		assertRequestUrlencoded(t, r, filters)
+	})
 
 	err := client.Contacts.AddContactsToGroup(ctx, "1", filters)
 
@@ -374,16 +376,21 @@ func TestRemoveContactsFromGroup(t *testing.T) {
 
 	defer teardown()
 
-	mux.HandleFunc("/contacts/groups/1/members", func(w http.ResponseWriter, r *http.Request) {
-		assertRequestMethod(t, r, "POST")
-		assertRequestQueryParam(t, r, "first_name", "name1")
-	})
-
 	filters := &ContactListFilters{
 		FirstName: []string{"name1"},
 	}
 
-	err := client.Contacts.AddContactsToGroup(ctx, "1", filters)
+	mux.HandleFunc("/contacts/groups/1/members", func(w http.ResponseWriter, r *http.Request) {
+		assertRequestMethod(t, r, "DELETE")
+
+		body, _ := ioutil.ReadAll(r.Body)
+		values, _ := url.ParseQuery(string(body))
+		if values.Get("first_name") != "name1" {
+			t.Errorf("Unexpected body: %v", values)
+		}
+	})
+
+	err := client.Contacts.RemoveContactsFromGroup(ctx, "1", filters)
 
 	if err != nil {
 		t.Error(err)
@@ -407,6 +414,96 @@ func TestAddContactToGroup(t *testing.T) {
 
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("Given: %+v Expected: %+v", result, expected)
+	}
+}
+
+func TestAssignContactToGroups(t *testing.T) {
+	client, mux, teardown := setup()
+
+	defer teardown()
+
+	mux.HandleFunc("/contacts/1/groups", func(w http.ResponseWriter, r *http.Request) {
+		assertRequestMethod(t, r, "POST")
+
+		r.ParseForm()
+		if r.Form.Get("0") != "g1" || r.Form.Get("1") != "g2" {
+			t.Errorf("Unexpected body: %v", r.Form)
+		}
+
+		fmt.Fprint(w, `{"size":0,"collection":[]}`)
+	})
+
+	_, err := client.Contacts.AssignContactToGroups(ctx, "1", []string{"g1", "g2"})
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestCleanTrash(t *testing.T) {
+	client, mux, teardown := setup()
+
+	defer teardown()
+
+	mux.HandleFunc("/contacts/trash", func(w http.ResponseWriter, r *http.Request) {
+		assertRequestMethod(t, r, "DELETE")
+	})
+
+	if err := client.Contacts.CleanTrash(ctx); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestRestoreTrash(t *testing.T) {
+	client, mux, teardown := setup()
+
+	defer teardown()
+
+	mux.HandleFunc("/contacts/trash/restore", func(w http.ResponseWriter, r *http.Request) {
+		assertRequestMethod(t, r, "PUT")
+	})
+
+	if err := client.Contacts.RestoreTrash(ctx); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestGetCustomFieldOptions(t *testing.T) {
+	client, mux, teardown := setup()
+
+	defer teardown()
+
+	mux.HandleFunc("/contacts/fields/1/options", func(w http.ResponseWriter, r *http.Request) {
+		assertRequestMethod(t, r, "GET")
+		fmt.Fprint(w, `{"size":1,"collection":[{"name":"Red","value":"red"}]}`)
+	})
+
+	result, err := client.Contacts.GetCustomFieldOptions(ctx, "1")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if result.Size != 1 || len(result.Collection) != 1 || result.Collection[0].Name != "Red" {
+		t.Errorf("Unexpected: %+v", result)
+	}
+}
+
+func TestGetAvailableFields(t *testing.T) {
+	client, mux, teardown := setup()
+
+	defer teardown()
+
+	mux.HandleFunc("/contacts/fields/available", func(w http.ResponseWriter, r *http.Request) {
+		assertRequestMethod(t, r, "GET")
+		fmt.Fprint(w, `[{"id":"first_name","name":"First name","type":"text","built_in":true}]`)
+	})
+
+	result, err := client.Contacts.GetAvailableFields(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(result) != 1 || result[0].Id != "first_name" || !result[0].BuiltIn {
+		t.Errorf("Unexpected: %+v", result)
 	}
 }
 
