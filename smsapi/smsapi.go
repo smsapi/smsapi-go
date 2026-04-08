@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	Version        = "1.2.3"
+	Version        = "1.3.0"
 	Name           = "smsapi-go"
 	BaseUrlPl      = "https://api.smsapi.pl/"
 	BaseUrlCom     = "https://api.smsapi.com/"

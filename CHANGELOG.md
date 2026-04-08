@@ -1,5 +1,18 @@
 # Changes
 
+## 1.3.0
+- Add Callbacks, MFA, Opt-Out, SMS Templates and Shipment APIs
+- Add Blacklist CSV import endpoint
+- Add Subusers shares (sendernames, blacklist, templates) management
+- Add contact custom fields options and available fields helpers
+- Add contact trash management (clean/restore) and AssignContactToGroups
+- Fix 415 error on contact, contact group and group permissions PUT/POST
+  endpoints by sending application/x-www-form-urlencoded bodies
+- Fix subuser update accidentally deactivating account; User.Active is
+  now *bool so it can be omitted or set in either direction
+- Fix MFA CreateMfaCode.Fast type to *bool to allow explicit false
+- ListUsers now accepts an optional query filter
+
 ## 1.2.3
 - Remove not supported API endpoint (sendername activation)
 
@@ -24,9 +37,6 @@
 
 ## 1.1.1
 - Update http method for some endpoints
-
-## Unreleased
-- Fixed Short URL with expire time
 
 ## 1.1.0
 - Page iteration
