@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	Version        = "1.3.0"
+	Version        = "1.4.0"
 	Name           = "smsapi-go"
 	BaseUrlPl      = "https://api.smsapi.pl/"
 	BaseUrlCom     = "https://api.smsapi.com/"
@@ -97,7 +97,11 @@ func NewClient(apiUrl string, accessToken string, httpClient *http.Client) *Clie
 }
 
 func NewPlClient(accessToken string, httpClient *http.Client) *Client {
-	smsapiClient := &*NewClient(BaseUrlPl, accessToken, httpClient)
+	return NewAllClient(BaseUrlPl, accessToken, httpClient)
+}
+
+func NewAllClient(apiUrl, accessToken string, httpClient *http.Client) *Client {
+	smsapiClient := NewClient(apiUrl, accessToken, httpClient)
 
 	smsapiClient.Mms = &MmsApi{client: smsapiClient}
 	smsapiClient.Vms = &VmsApi{client: smsapiClient}
@@ -106,7 +110,7 @@ func NewPlClient(accessToken string, httpClient *http.Client) *Client {
 }
 
 func NewInternationalClient(accessToken string, httpClient *http.Client) *Client {
-	return &*NewClient(BaseUrlCom, accessToken, httpClient)
+	return NewClient(BaseUrlCom, accessToken, httpClient)
 }
 
 func (client *Client) NewUrlencodedRequest(method, path string, body interface{}) (*http.Request, error) {

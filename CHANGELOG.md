@@ -1,5 +1,8 @@
 # Changes
 
+## 1.4.0
+- Add NewAllClient factory accepting custom API URL with all APIs (incl. MMS/VMS)
+
 ## 1.3.0
 - Add Callbacks, MFA, Opt-Out, SMS Templates and Shipment APIs
 - Add Blacklist CSV import endpoint
