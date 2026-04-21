@@ -28,7 +28,7 @@ type Vms struct {
 
 type VmsResponse struct {
 	Id              string     `json:"id,omitempty"`
-	Points          float32    `json:"points,omitempty"`
+	Points          Points     `json:"points,omitempty"`
 	Number          string     `json:"number,omitempty"`
 	DateSent        *Timestamp `json:"date_sent,omitempty"`
 	SubmittedNumber string     `json:"submitted_number,omitempty"`

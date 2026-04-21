@@ -13,13 +13,13 @@ type ProfileApi struct {
 }
 
 type ProfileDetailsResponse struct {
-	Name        string  `json:"name,omitempty"`
-	Email       string  `json:"email,omitempty"`
-	Username    string  `json:"username,omitempty"`
-	PhoneNumber string  `json:"phone_number,omitempty"`
-	PaymentType string  `json:"payment_type,omitempty"`
-	UserType    string  `json:"user_type,omitempty"`
-	Points      float32 `json:"points,omitempty"`
+	Name        string `json:"name,omitempty"`
+	Email       string `json:"email,omitempty"`
+	Username    string `json:"username,omitempty"`
+	PhoneNumber string `json:"phone_number,omitempty"`
+	PaymentType string `json:"payment_type,omitempty"`
+	UserType    string `json:"user_type,omitempty"`
+	Points      Points `json:"points,omitempty"`
 }
 
 func (accountApi *ProfileApi) Details(ctx context.Context) (*ProfileDetailsResponse, error) {

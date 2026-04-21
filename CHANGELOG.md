@@ -1,5 +1,13 @@
 # Changes
 
+## 1.5.0
+- Add `Points` type that decodes both JSON numbers and numeric strings
+  (SMSAPI sometimes returns `points` as `"0.3000"`). Applied to
+  `SmsResponse.Points`, `MmsResponse.Points`, `VmsResponse.Points`,
+  `ProfileDetailsResponse.Points`, and `UserPoints.FromAccount` /
+  `UserPoints.PerMonth`. Note: these fields are no longer `float32` —
+  cast with `float32(resp.Points)` if mixing with plain float32 values.
+
 ## 1.4.0
 - Add NewAllClient factory accepting custom API URL with all APIs (incl. MMS/VMS)
 

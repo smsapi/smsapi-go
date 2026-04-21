@@ -27,8 +27,8 @@ type UserCredentials struct {
 }
 
 type UserPoints struct {
-	FromAccount float32 `json:"from_account,omitempty"`
-	PerMonth    float32 `json:"per_month,omitempty"`
+	FromAccount Points `json:"from_account,omitempty"`
+	PerMonth    Points `json:"per_month,omitempty"`
 }
 
 type UserResponse struct {
