@@ -20,7 +20,7 @@ type Sms struct {
 	Udh             string     `json:"udh,omitempty"`
 	SkipForeign     bool       `json:"skip_foreign,omitempty"`
 	AllowDuplicates bool       `json:"allow_duplicates,omitempty"`
-	Idx             int        `json:"idx,omitempty"`
+	Idx             string     `json:"idx,omitempty"`
 	CheckIdx        bool       `json:"check_idx,omitempty"`
 	Nounicode       bool       `json:"nounicode,omitempty"`
 	Normalize       bool       `json:"normalize,omitempty"`
